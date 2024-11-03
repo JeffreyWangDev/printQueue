@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %} Print {% endblock %}
+{% block content %}
+        <section class="d-flex justify-content-center align-items-start clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);">
+            <div class="text-start text" style="margin: 50px;">
+                {% if message %}
+                <div class="alert alert-success alert-dismissible fade show"
+                     role="alert">
+                    <ul>
+                        <li>{{ message }}</li>
+                    </ul>
+        
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
+                    <ul>
+                        <li>{{ error }}</li>
+                    </ul>
+        
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+                {% endif %}
+                <h1>Upload files to print</h1>
+                <div></div>
+                <form action="/print" method="post" enctype="multipart/form-data">
+                    <div class="input-group" style="margin: 10px;"><input class="form-control" accept=".stl" type="file" name="file" required=""></div>
+                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Color:</span><select name="color" data-live-search="true" data-width="100%">
+                            <option value="ANY" selected="">Any</option>
+                            <option value="RED">Red</option>
+                            <option value="BLUE">Blue</option>
+                            <option value="YELLOW">Yellow</option>
+                            <option value="BLACK">Black</option>
+                            <option value="WHITE">White</option>
+                            <option value="ORANGE">Orange</option>
+                        </select></div>
+                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Date Required:</span><select name="date" data-live-search="true" data-width="100%">
+                            <option value="0" selected="">Before Friday</option>
+                            <option value="1">Tomorrow</option>
+                            <option value="2">In 2 days</option>
+                            <option value="3">In 3 day</option>
+                            <option value="-1">Any (Not kids print)</option>
+                        </select></div>
+                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Additional requirements:</span><input class="form-control" type="text" autocomplete="on" name="reqs"></div>
+                    <input class="btn btn-primary" type="submit" style="background: #007ac9;margin: 10px;">
+                </div>
+            </form>
+        </section>
+{% endblock %}

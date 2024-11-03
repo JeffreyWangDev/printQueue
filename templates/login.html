@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %} Login {% endblock %}
+{% block content %}
+        <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);height: 0px;">
+            <div class="text-start text">
+                <div id="login-one" class="login-one">
+                    <form action="/login" method="post" class="login-one-form">
+                        {% if error %}
+                        <div class="alert alert-danger alert-dismissible fade show"
+                             role="alert">
+                            <ul>
+                                <li>{{ error }}</li>
+                            </ul>
+                
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+                        <div class="col">
+                            <div class="login-one-ico" style="background: #579ee0;"><i class="fa fa-unlock-alt" id="lockico"></i>
+                                <div>
+                                    <h3 id="heading">SIGN IN:</h3>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="text" name = "user" placeholder="Username" class="form-control" >
+                                <input type="password" name = "password" placeholder="Password" class="form-control" >
+                                <button class="btn btn-primary" id="button" style="background-color: #007ac9;width: 100%;margin: 0px;" type="submit">Log in</button>
+                                {{ captcha_html(captcha)|safe }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+{% endblock %}

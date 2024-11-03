@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %} Admin {% endblock %}
+{% block content %}
+    <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);width: 100%;">
+        <div class="text-start text" style="width: 100%;max-width: 900px;">
+            <div class="card shadow" style="width: 100%;margin: 30px;margin-top: 130px;">
+                <div class="card-header py-2" style="width: 100%;">
+                    <p class="lead text-info m-0">Items in print queue</p>
+                </div>
+                <div class="card-body" style="width: 100%;">
+                    <div class="table-responsive table mb-0 pt-3 pe-2">
+                        <table class="sortable table table-striped table-sm my-0 mydatatable">
+                            <thead>
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>User</th>
+                                    <th>File</th>
+                                    <th>Color</th>
+                                    <th>Due Date</th>
+                                    <th>Add Date</th>
+                                    <th>Requests</th>
+                                    <th>Mark as printing</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in to_print %}
+                                <tr>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
+                                    <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
+                                    <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="printing()">Printing</button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" style="width: 100%;margin: 30px;">
+                <div class="card-header py-2" style="width: 100%;">
+                    <p class="lead text-info m-0">Items printing</p>
+                </div>
+                <div class="card-body" style="width: 100%;">
+                    <div class="table-responsive table mb-0 pt-3 pe-2">
+                        <table class="sortable table table-striped table-sm my-0 mydatatable">
+                            <thead>
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>User</th>
+                                    <th>File</th>
+                                    <th>Color</th>
+                                    <th>Due Date</th>
+                                    <th>Add Date</th>
+                                    <th>Requests</th>
+                                    <th>Mark as done</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in printing %}
+                                <tr>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
+                                    <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
+                                    <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="done()">Done</button></td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow" style="width: 100%;margin: 30px;">
+                <div class="card-header py-2" style="width: 100%;">
+                    <p class="lead text-info m-0">Items done</p>
+                </div>
+                <div class="card-body" style="width: 100%;">
+                    <div class="table-responsive table mb-0 pt-3 pe-2">
+                        <table class="sortable table table-striped table-sm my-0 mydatatable">
+                            <thead>
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>User</th>
+                                    <th>File</th>
+                                    <th>Color</th>
+                                    <th>Due Date</th>
+                                    <th>Add Date</th>
+                                    <th>Requests</th>
+                                    <th>Move to queue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in done %}
+                                <tr>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
+                                    <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
+                                    <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="reprint()">Re-Print</button></td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        function printing() {
+            var uuid = event.target.id;
+            fetch("/api/printing/"+uuid, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+            })
+            .then(function(response) {
+            return response.json();
+            })
+            .then(function(jsonResponse) {
+            if (jsonResponse.status == "success") {
+                location.reload();
+            }
+            });
+        }
+        function done() {
+            var uuid = event.target.id;
+            fetch("/api/completed/"+uuid, {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify({}),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                if (jsonResponse.status == "success") {
+                    location.reload();
+                }
+                });
+        }
+        function reprint() {
+            var uuid = event.target.id;
+            fetch("/api/reprint/"+uuid, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+            })
+            .then(function(response) {
+            return response.json();
+            })
+            .then(function(jsonResponse) {
+                if (jsonResponse.status == "success") {
+                    location.reload();
+                }
+            });
+        }
+    </script>
+{% endblock %}

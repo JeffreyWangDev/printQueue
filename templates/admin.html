@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %} Admin {% endblock %}
+{% block content %}
+        <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);width: 100%;">
+            <div class="text-start text" style="width: 100%;max-width: 900px;">
+                <div class="card shadow" style="width: 100%;margin: 30px;">
+                    <div class="card-header py-2" style="width: 100%;">
+                        <p class="lead text-info m-0">All users</p>
+                    </div>
+                    <div class="card-body" style="width: 100%;">
+                        <div class="table-responsive table mb-0 pt-3 pe-2">
+                            <table class="sortable table table-striped table-sm my-0 mydatatable">
+                                <thead>
+                                    <tr>
+                                        <th>UUID</th>
+                                        <th>Name</th>
+                                        <th>Permission</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td style="max-width: 90px;width: 90px;">{{ user.id }}</td>
+                                        <td class="text-center" style="max-width: 80px;width: 80px;">{{ user.username }}</td>
+                                        <td class="text-center" style="max-width: 80px;width: 80px;">{{ user.permission_pretty }}</td>
+                                        <td style="width: 110px;max-width: 110px;"><button id= "{{ user.id }}" class="btn btn-primary" data-bss-hover-animate="pulse" type="button" style="width: 100%;background: #f15379;color: rgb(92,6,0);font-size: 20px;" onclick ="removeUser()">Delete</button></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card mb-5">
+                            <div class="card-body d-flex flex-column align-items-center">
+                                <div class="text-center">
+                                    <div class="mb-3"><input class="form-control" type="text" name = "username" placeholder="Username"></div>
+                                    <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
+                                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Permission:</span><select name="permission" data-live-search="true" data-width="100%">
+                                        <option value="0" selected="">User</option>
+                                        <option value="1">Admin</option>
+                                    </select></div>
+                                    <div class="mb-3"><button class="btn btn-primary d-block w-100" onclick="addUser()">Add user</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+            function addUser(){
+                var username = document.getElementsByName("username")[0].value;
+                var password = document.getElementsByName("password")[0].value;
+                var permission = document.getElementsByName("permission")[0].value;
+                fetch("/api/adduser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "username": username,
+                    "password": password,
+                    "permission": permission
+                }),
+                })
+                .then(function(response) {
+                return response.json();
+                })
+                .then(function(jsonResponse) {
+                    console.log(jsonResponse);
+                if (jsonResponse.status == "success") {
+                    location.reload();
+                }
+                });
+            }
+
+            function removeUser() {
+                var uuid = event.target.id;
+                fetch("/api/deleteuser/"+uuid, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({}),
+                })
+                .then(function(response) {
+                return response.json();
+                })
+                .then(function(jsonResponse) {
+                    console.log(jsonResponse);
+                if (jsonResponse.status == "success") {
+                    location.reload();
+                }
+                });
+            }
+        </script>
+{% endblock %}

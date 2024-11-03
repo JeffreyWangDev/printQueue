@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Cola - {% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.min.css') }}">
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body onload="changeNav()">
+    <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar">
+        <div class="container"><a class="navbar-brand logo" href="#">Cola</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a id = "home" class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a id = "print" class="nav-link" href="/print">Upload</a></li>
+                    <li class="nav-item"><a id = "queue" class="nav-link" href="/queue">queue</a></li>
+                    <li class="nav-item"><a id = "login" class="nav-link" href="/login">Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page" style="background: #07a6ea;">
+        {% block content %} {% endblock %}
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function changeNav(){ 
+            if(window.location.pathname == "/print"){
+                document.getElementById("print").classList.add("active");
+            }else if(window.location.pathname == "/queue"){
+                document.getElementById("queue").classList.add("active");
+            }else if(window.location.pathname == "/login"){
+                document.getElementById("login").classList.add("active");
+            }else if(window.location.pathname == "/"){
+                document.getElementById("home").classList.add("active");
+            }
+            if(document.cookie.includes("id")){
+                document.getElementById("login").innerHTML = "Sign Out";
+                document.getElementById("login").href = "/logout";
+            }
+        }
+
+    </script>
+</body>
+</html>

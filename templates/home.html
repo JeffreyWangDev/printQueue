@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+    <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);width: 100%;">
+        <div class="text-start text" style="width: 100%;max-width: 1000px;">
+            <div class="card shadow" style="width: 100%;margin: 30px;">
+                <div class="card-header py-2" style="width: 100%;">
+                    <p class="lead text-info m-0">Your prints</p>
+                </div>
+                <div class="card-body" style="width: 100%;">
+                    <div class="table-responsive table mb-0 pt-3 pe-2">
+                        <table class="sortable table table-striped table-sm my-0 mydatatable">
+                            <thead>
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>File</th>
+                                    <th>Color</th>
+                                    <th>Due Date</th>
+                                    <th>Add Date</th>
+                                    <th>Requests</th>
+                                    <th>Status</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in prints %}
+                                <tr>
+                                    <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
+                                    <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
+                                    <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
+                                    <td style="width: 300px;max-width: 100px;">{{ item.status_presentable }}</td>
+                                    <td style="width: 110px;max-width: 110px;"><button id= {{ item.uuid }} class="btn btn-primary" data-bss-hover-animate="pulse" type="button" style="width: 100%;background: #f15379;color: rgb(92,6,0);font-size: 20px;" onclick = "remove()">Delete</button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        function remove() {
+            var uuid = event.target.id;
+            fetch("/api/delete/"+uuid, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+            }).then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                if (jsonResponse.status == "success") {
+                    location.reload();
+                }
+                });
+        }
+    </script>
+{% endblock %}
