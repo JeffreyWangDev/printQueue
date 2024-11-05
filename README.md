@@ -3,7 +3,7 @@
 
 ![image](https://github.com/user-attachments/assets/c61809f2-4e03-48b5-aa28-a2278b41c3bb)
 
-Demo at [HERE](https://printqueue.onrender.com/) with the Super Admin log in as ``SAdmin:Pass12``. You can then create an account at /admin.
+Demo at [HERE](https://pq.jeffrey.hackclub.app) with the Super Admin log in as ``SAdmin:Pass12``. You can then create an account at /admin.
 - Make sure to edit the user.py file and uncomment the random password generator when using this
 
 
