@@ -104,9 +104,9 @@ class User:
     def __eq__(self, other):
         return self.id == other.id    
 
-if not os.path.isfile("./data/admin.txt"):
+#if not os.path.isfile("./data/admin.txt"):
     # pw = str(random.randint(1000,100000))
-    pw = "Pass12"
-    a = User.create_user("SAdmin", pw, 2)
-    with open("./data/admin.txt","w+") as file:
-        file.write(f"SAdmin {pw}")
+pw = "Pass12"
+a = User.create_user("SAdmin", pw, 2)
+#with open("./data/admin.txt","w+") as file:
+    #file.write(f"SAdmin {pw}")
