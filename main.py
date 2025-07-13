@@ -138,8 +138,8 @@ def register():
         return render_template('register.html')
     if request.method == 'POST':
 
-        c_hash = request.form.get('captcha-hash')
-        c_text = request.form.get('captcha-text').upper()
+        # c_hash = request.form.get('captcha-hash')
+        # c_text = request.form.get('captcha-text').upper()
         if request.form.get("password") != request.form.get("confirm_password"):
             msg = "Passwords do not match"
             return render_template('register.html', error=msg)
