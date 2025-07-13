@@ -4,7 +4,7 @@ import time
 os.makedirs("./data/uploads", exist_ok=True)
 
 from flask import Flask, render_template, request, make_response, url_for, redirect, send_file
-# from flask_simple_captcha import CAPTCHA
+from flask_simple_captcha import CAPTCHA
 
 from utils import hash
 from users import User
@@ -25,8 +25,8 @@ CAPTCHA_CONFIG = {
 }
 app.config['MAX_CONTENT_LENGTH'] = 75 * 1024 * 1024
 
-# captcha = CAPTCHA(config=CAPTCHA_CONFIG)
-# app = captcha.init_app(app)
+captcha = CAPTCHA(config=CAPTCHA_CONFIG)
+app = captcha.init_app(app)
 logger = Logger("log.txt")
 
 
@@ -101,8 +101,8 @@ def login():
     if request.method == "GET":
         if cheek_permission(request, 0)[0]:
             return redirect(url_for('home'))
-        # new_captcha = captcha.create()
-        return render_template('login.html')
+        new_captcha = captcha.create()
+        return render_template('login.html', captcha=new_captcha)
     if request.method == 'POST':
         # c_hash = request.form.get('captcha-hash')
         # c_text = request.form.get('captcha-text').upper()
@@ -134,41 +134,51 @@ def register():
     if request.method == "GET":
         if cheek_permission(request, 0)[0]:
             return redirect(url_for('home'))
-        # new_captcha = captcha.create()
-        return render_template('register.html')
+        new_captcha = captcha.create()
+        return render_template('register.html', captcha=new_captcha)
     if request.method == 'POST':
 
-        # c_hash = request.form.get('captcha-hash')
-        # c_text = request.form.get('captcha-text').upper()
-        if request.form.get("password") != request.form.get("confirm_password"):
-            msg = "Passwords do not match"
-            return render_template('register.html', error=msg)
-        if User.get_user_by_username(request.form.get("user")) is not None:
-            msg = "User Already Exists"
-            return render_template('register.html', error=msg)
-        if len(request.form.get("password")) < 6:
-            msg = "Password must be at least 6 characters long"
-            return render_template('register.html', error=msg)
-        if len(request.form.get("user")) < 3:
-            msg = "Username must be at least 3 characters long"
-            return render_template('register.html', error=msg)
-        if len(request.form.get("password")) > 100:
-            msg = "Password must be at most 100 characters long"
-            return render_template('register.html', error=msg)
-        if len(request.form.get("user")) > 20:
-            msg = "Username must be at most 20 characters long"
-            return render_template('register.html', error=msg)
-        user_create = User.create_user(request.form.get("user"), request.form.get("password"))
-        if user_create is not None:
-            msg = "User Created Successfully"
-            logger.log(f"User Created: {user_create.username}")
-            
-            return render_template('login.html', error = msg)
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text').upper()
+        if captcha.verify(c_text, c_hash):
+            if request.form.get("password") != request.form.get("confirm_password"):
+                msg = "Passwords do not match"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if User.get_user_by_username(request.form.get("user")) is not None:
+                msg = "User Already Exists"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("password")) < 6:
+                msg = "Password must be at least 6 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("user")) < 3:
+                msg = "Username must be at least 3 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("password")) > 100:
+                msg = "Password must be at most 100 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("user")) > 20:
+                msg = "Username must be at most 20 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            user_create = User.create_user(request.form.get("user"), request.form.get("password"))
+            if user_create is not None:
+                msg = "User Created Successfully"
+                logger.log(f"User Created: {user_create.username}")
+                
+                return render_template('login.html', error = msg)
+            else:
+                # logger.log_invalid_login(request)
+                msg = "User Already Exists"
         else:
-            # logger.log_invalid_login(request)
-            msg = "User Already Exists"
-
-        return render_template('register.html', error = msg)
+            logger.log_captcha_error(request)
+            msg = "Invalid Captcha"
+        new_captcha = captcha.create()
+        return render_template('register.html', captcha=new_captcha,error = msg)
 
 @app.route("/logout", methods=['GET'])
 def logout():

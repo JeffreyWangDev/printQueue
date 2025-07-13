@@ -27,6 +27,7 @@
                                 <input type="password" name = "password" placeholder="Password" class="form-control" >
                                 <input type="password" name = "confirm_password" placeholder="Confirm Password" class="form-control" >
                                 <button class="btn btn-primary" id="button" style="background-color: #007ac9;width: 100%;margin: 0px;" type="submit">Register</button>
+                                {{ captcha_html(captcha)|safe }}
                             </div>
                         </div>
                     </form>
