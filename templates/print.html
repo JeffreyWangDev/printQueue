@@ -27,10 +27,13 @@
                 </div>
                 {% endif %}
                 <h1>Upload files to print</h1>
+                <h3>Upload 3mf or gcode files PLEASE</h3>
+                <h3>There is a limit of 4 hours per print, if you need longer come talk with people printing.</h3>
+
                 <div></div>
                 <form action="/print" method="post" enctype="multipart/form-data">
-                    <div class="input-group" style="margin: 10px;"><input class="form-control" accept=".stl" type="file" name="file" required=""></div>
-                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Color:</span><select name="color" data-live-search="true" data-width="100%">
+                    <div class="input-group" style="margin: 10px;"><input class="form-control" accept=".gcode,.3mf" type="file" name="file" required=""></div>
+                    <!-- <div class="input-group" style="margin: 10px;"><span class="input-group-text">Color:</span><select name="color" data-live-search="true" data-width="100%">
                             <option value="ANY" selected="">Any</option>
                             <option value="RED">Red</option>
                             <option value="BLUE">Blue</option>
@@ -38,14 +41,16 @@
                             <option value="BLACK">Black</option>
                             <option value="WHITE">White</option>
                             <option value="ORANGE">Orange</option>
-                        </select></div>
-                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Date Required:</span><select name="date" data-live-search="true" data-width="100%">
+                        </select></div> -->
+                    <!-- <div class="input-group" style="margin: 10px;"><span class="input-group-text">Date Required:</span><select name="date" data-live-search="true" data-width="100%">
                             <option value="0" selected="">Before Friday</option>
                             <option value="1">Tomorrow</option>
                             <option value="2">In 2 days</option>
                             <option value="3">In 3 day</option>
                             <option value="-1">Any (Not kids print)</option>
-                        </select></div>
+                        </select></div> -->
+                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Slack ID:</span><input class="form-control" required="" type="text" autocomplete="on" name="slackID"></div>
+                    <div class="input-group" style="margin: 10px;"><span class="input-group-text">Phone Number (Not needed but helpful):</span><input class="form-control" type="text" autocomplete="on" name="phone"></div>
                     <div class="input-group" style="margin: 10px;"><span class="input-group-text">Additional requirements:</span><input class="form-control" type="text" autocomplete="on" name="reqs"></div>
                     <input class="btn btn-primary" type="submit" style="background: #007ac9;margin: 10px;">
                 </div>

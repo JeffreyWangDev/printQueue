@@ -24,11 +24,14 @@ def log_in(user):
     return resp
 
 def log_out(request):
-    permission_cheek = cheek_permission(request, 0)
-    if permission_cheek[0]:
-        login_coookies.pop(int(permission_cheek[1].id))
-        resp = make_response(redirect(url_for('login')))
-        resp.set_cookie('id', '', expires=0)
-        resp.set_cookie('auth', '', expires=0)
-        return resp
-    return redirect(url_for('login'))
+    # permission_cheek = cheek_permission(request, 0)
+    # if permission_cheek[0]:
+    try:
+        login_coookies.pop(int(request.cookies.get('id')))
+    except KeyError:
+        pass
+    resp = make_response(redirect(url_for('login')))
+    resp.set_cookie('id', '', expires=0)
+    resp.set_cookie('auth', '', expires=0)
+    return resp
+    # return redirect(url_for('login'))

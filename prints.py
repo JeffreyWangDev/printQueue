@@ -3,13 +3,14 @@ from users import User
 from datetime import datetime
 import os
 class Print:
-    def __init__(self, uuid:int, user:User, color:str, date_made, date_due:int, requests:str, status:int):
+    def __init__(self, uuid:int, user:User, slack_id:str, phone_number:str, date_made:int, requests:str, status:int):
         self.uuid = uuid
         self.user = user
-        self.color = color
+        self.slack_id = slack_id
+        self.phone_number = phone_number
         self.date_made = date_made
-        self.date_due = date_due
-        self.date_due_presentable = "Not kids print" if date_due==-1 else "Due this friday" if date_due ==0 else datetime.fromtimestamp(date_due).strftime('%Y-%m-%d')
+        # self.date_due = date_due
+        # self.date_due_presentable = "Not kids print" if date_due==-1 else "Due this friday" if date_due ==0 else datetime.fromtimestamp(date_due).strftime('%Y-%m-%d')
         self.add_date_presentable = datetime.fromtimestamp(date_made).strftime('%Y-%m-%d %H:%M:%S')
         self.requests = requests    
         self.status = status

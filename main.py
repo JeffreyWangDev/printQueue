@@ -23,10 +23,12 @@ CAPTCHA_CONFIG = {
     'EXCLUDE_VISUALLY_SIMILAR': True,
     'ONLY_UPPERCASE': True
 }
+app.config['MAX_CONTENT_LENGTH'] = 75 * 1024 * 1024
 
 captcha = CAPTCHA(config=CAPTCHA_CONFIG)
 app = captcha.init_app(app)
 logger = Logger("log.txt")
+
 
 @app.route("/", methods=['GET'])
 def home():
@@ -34,7 +36,7 @@ def home():
     permission_cheek = cheek_permission(request, 0)
     if permission_cheek[0]:
         logger.log(f"Home Requested by {permission_cheek[1].username}")
-        prints = Print.get_prints_by_user(permission_cheek[1])
+        prints = Print.get_all_prints()
         return render_template('home.html', prints=prints)
     logger.log_permission_error(request)
     return redirect(url_for('login'))
@@ -43,18 +45,34 @@ def home():
 def upload():
     logger.log_request(request)
     permission_cheek = cheek_permission(request, 0)
+    print(request.remote_addr)
     if permission_cheek[0]:
         if request.method == "GET":
             return render_template('print.html')
         elif request.method == 'POST':
             user = permission_cheek[1]
             file = request.files['file']
-            if file.filename.endswith('.stl'):
+            if file.filename.endswith('.gcode') or file.filename.endswith('.3mf'):
                 file.save(f"./data/uploads/{file.filename}")
-                color = request.form.get('color')
-                due_in = request.form.get('date')
+                slackID = request.form.get('slackID')
+                phone = request.form.get('phone')
                 requirements = request.form.get('reqs')
-                print_uuid = user.create_print(color, int(due_in), requirements)
+                if slackID is None or phone is None or requirements is None:
+                    logger.log_error(request, "Missing Data")
+                    return render_template('print.html', error="Missing Data")
+                if len(slackID) < 3:
+                    logger.log_error(request, "Invalid Data Length")
+                    return render_template('print.html', error="Invalid Data Length")
+                if len(slackID) > 20 or len(phone) > 20 or len(requirements) > 500:
+                    logger.log_error(request, "Data Too Long")
+                    return render_template('print.html', error="Data Too Long")
+                if Print.get_prints_by_user(user) is not None:
+                    for print_data in Print.get_prints_by_user(user):
+                        if print_data.status == 0:
+                            logger.log_error(request, "User Already Has a Print in Queue")
+                            return render_template('print.html', error="You already have a print in queue")
+                
+                print_uuid = user.create_print(slackID, phone, requirements)
                 os.rename(f"./data/uploads/{file.filename}", f"./data/uploads/{print_uuid}.{file.filename.split('.')[-1]}")
                 logger.log(f"Print Created with ID: {print_uuid} by {user.username}")
                 return render_template('print.html', message="Print Created with ID: "+str(print_uuid))
@@ -86,21 +104,81 @@ def login():
         new_captcha = captcha.create()
         return render_template('login.html', captcha=new_captcha)
     if request.method == 'POST':
+        # c_hash = request.form.get('captcha-hash')
+        # c_text = request.form.get('captcha-text').upper()
+        user_login = User.login(request.form.get("user"), request.form.get("password"))
+        if user_login is not None:
+            logger.log_login(user_login)
+            return log_in(user_login)
+        else:
+            logger.log_invalid_login(request)
+            msg = "Invalid Username or Password"
+            
+        # if captcha.verify(c_text, c_hash):
+        #     user_login = User.login(request.form.get("user"), request.form.get("password"))
+        #     if user_login is not None:
+        #         logger.log_login(user_login)
+        #         return log_in(user_login)
+        #     else:
+        #         logger.log_invalid_login(request)
+        #         msg = "Invalid Username or Password"
+        # else:
+        #     logger.log_captcha_error(request)
+        #     msg = "Invalid Captcha"
+        # new_captcha = captcha.create()
+        return render_template('login.html',error = msg)
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    logger.log_request(request)
+    if request.method == "GET":
+        if cheek_permission(request, 0)[0]:
+            return redirect(url_for('home'))
+        new_captcha = captcha.create()
+        return render_template('register.html', captcha=new_captcha)
+    if request.method == 'POST':
+
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text').upper()
         if captcha.verify(c_text, c_hash):
-            user_login = User.login(request.form.get("user"), request.form.get("password"))
-            if user_login is not None:
-                logger.log_login(user_login)
-                return log_in(user_login)
+            if request.form.get("password") != request.form.get("confirm_password"):
+                msg = "Passwords do not match"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if User.get_user_by_username(request.form.get("user")) is not None:
+                msg = "User Already Exists"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("password")) < 6:
+                msg = "Password must be at least 6 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("user")) < 3:
+                msg = "Username must be at least 3 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("password")) > 100:
+                msg = "Password must be at most 100 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            if len(request.form.get("user")) > 20:
+                msg = "Username must be at most 20 characters long"
+                new_captcha = captcha.create()
+                return render_template('register.html', captcha=new_captcha, error=msg)
+            user_create = User.create_user(request.form.get("user"), request.form.get("password"))
+            if user_create is not None:
+                msg = "User Created Successfully"
+                logger.log(f"User Created: {user_create.username}")
+                
+                return render_template('login.html', error = msg)
             else:
-                logger.log_invalid_login(request)
-                msg = "Invalid Username or Password"
+                # logger.log_invalid_login(request)
+                msg = "User Already Exists"
         else:
             logger.log_captcha_error(request)
             msg = "Invalid Captcha"
         new_captcha = captcha.create()
-        return render_template('login.html', captcha=new_captcha,error = msg)
+        return render_template('register.html', captcha=new_captcha,error = msg)
 
 @app.route("/logout", methods=['GET'])
 def logout():
@@ -111,7 +189,7 @@ def logout():
 @app.route("/download/<id>", methods=['GET'])
 def download(id):
     logger.log_request(request)
-    permission_cheek = cheek_permission(request, 0)
+    permission_cheek = cheek_permission(request, 2)
     if permission_cheek[0]:
         print_data = Print.get_print_by_id(id)
         print(print_data.user, permission_cheek[1], permission_cheek[1].permission)
@@ -143,7 +221,7 @@ def admin():
 @app.route("/api/printing/<id>", methods=['POST'])
 def printing(id):
     logger.log_request(request)
-    permission_cheek = cheek_permission(request, 1)
+    permission_cheek = cheek_permission(request, 2)
     if permission_cheek[0]:
         print_data = Print.get_print_by_id(id)
         if print_data is not None:
@@ -158,7 +236,7 @@ def printing(id):
 @app.route("/api/completed/<id>", methods=['POST'])
 def completed(id):
     logger.log_request(request)
-    permission_cheek = cheek_permission(request, 1)
+    permission_cheek = cheek_permission(request, 2)
     if permission_cheek[0]:
         print_data = Print.get_print_by_id(id)
         if print_data is not None:
@@ -173,7 +251,7 @@ def completed(id):
 @app.route("/api/reprint/<id>", methods=['POST'])
 def reprint(id):
     logger.log_request(request)
-    permission_cheek = cheek_permission(request, 1)
+    permission_cheek = cheek_permission(request, 2)
     if permission_cheek[0]:
         print_data = Print.get_print_by_id(id)
         if print_data is not None:
@@ -188,7 +266,7 @@ def reprint(id):
 @app.route("/api/delete/<id>", methods=['POST'])
 def deleteitem(id):
     logger.log_request(request)
-    permission_cheek = cheek_permission(request, 0)
+    permission_cheek = cheek_permission(request, 2)
     print_data = Print.get_print_by_id(id)
     if print_data is None:
         logger.log_error(request, "Print Not Found with ID: "+id)
@@ -250,3 +328,4 @@ def page_not_found(e):
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 5001)
+    

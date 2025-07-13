@@ -13,10 +13,10 @@
                             <thead>
                                 <tr>
                                     <th>UUID</th>
-                                    <th>User</th>
+                                    <!-- <th>User</th> -->
                                     <th>File</th>
-                                    <th>Color</th>
-                                    <th>Due Date</th>
+                                    <th>Slack ID</th>
+                                    <th>Phone Number</th>
                                     <th>Add Date</th>
                                     <th>Requests</th>
                                     <th>Mark as printing</th>
@@ -26,10 +26,10 @@
                                 {% for item in to_print %}
                                 <tr>
                                     <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
-                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <!-- <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td> -->
                                     <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
-                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
-                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.slack_id }}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.phone_number }}</td>
                                     <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
                                     <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
                                     <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="printing()">Printing</button></td>
@@ -49,11 +49,11 @@
                         <table class="sortable table table-striped table-sm my-0 mydatatable">
                             <thead>
                                 <tr>
-                                    <th>UUID</th>
-                                    <th>User</th>
+                                     <th>UUID</th>
+                                    <!-- <th>User</th> -->
                                     <th>File</th>
-                                    <th>Color</th>
-                                    <th>Due Date</th>
+                                    <th>Slack ID</th>
+                                    <th>Phone Number</th>
                                     <th>Add Date</th>
                                     <th>Requests</th>
                                     <th>Mark as done</th>
@@ -63,10 +63,10 @@
                                 {% for item in printing %}
                                 <tr>
                                     <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
-                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <!-- <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td> -->
                                     <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
-                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
-                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.slack_id }}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.phone_number }}</td>
                                     <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
                                     <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
                                     <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="done()">Done</button></td>
@@ -87,11 +87,11 @@
                         <table class="sortable table table-striped table-sm my-0 mydatatable">
                             <thead>
                                 <tr>
-                                    <th>UUID</th>
-                                    <th>User</th>
+                                     <th>UUID</th>
+                                    <!-- <th>User</th> -->
                                     <th>File</th>
-                                    <th>Color</th>
-                                    <th>Due Date</th>
+                                    <th>Slack ID</th>
+                                    <th>Phone Number</th>
                                     <th>Add Date</th>
                                     <th>Requests</th>
                                     <th>Move to queue</th>
@@ -101,10 +101,10 @@
                                 {% for item in done %}
                                 <tr>
                                     <td style="max-width: 90px;width: 90px;">{{ item.uuid }}</td>
-                                    <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td>
+                                    <!-- <td style="max-width: 90px;width: 90px;">{{ item.user.username}}</td> -->
                                     <td class="text-center" style="max-width: 80px;width: 80px;"><a class="btn btn-primary" role="button" style="width: 100%;height: 100%;background: #007ac9;" href="download/{{ item.uuid }}">Here</a></td>
-                                    <td style="max-width: 60px;width: 60px;">{{ item.color }}</td>
-                                    <td style="width: 130px;max-width: 130px;">{{ item.date_due_presentable}}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.slack_id }}</td>
+                                    <td style="max-width: 60px;width: 60px;">{{ item.phone_number }}</td>
                                     <td style="width: 130px;max-width: 130px;">{{ item.add_date_presentable}}</td>
                                     <td style="width: 300px;max-width: 300px;">{{ item.requests }}</td>
                                     <td style="width: 110px;max-width: 110px;"><button class="btn btn-primary" type="button" style="width: 100%;background: #007ac9;" id = "{{ item.uuid }}" onclick="reprint()">Re-Print</button></td>

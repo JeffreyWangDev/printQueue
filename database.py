@@ -21,9 +21,9 @@ class Database:
             CREATE TABLE IF NOT EXISTS prints (
                 uuid INTEGER PRIMARY KEY NOT NULL,
                 user TEXT NOT NULL,
-                color TEXT NOT NULL,
-                date_made INTEGER NOT NULL,
-                date_due INTEGER,
+                slack_id TEXT NOT NULL,
+                phone_number TEXT NOT NULL,
+                date_made INTEGER,
                 requests TEXT,
                 status INTEGER DEFAULT '0'
             )
@@ -103,13 +103,13 @@ class Database:
         ''', (uuid,))
         self.conn.commit()
         cursor.close()
-    
-    def create_print(self, user, color, date_made:int, date_due:int, requests):
+
+    def create_print(self, user, slack_ID, phone_number, date_made:int,  requests):
         uuid = self.generateUUID("prints")
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO prints (uuid, user, color, date_made, date_due, requests) VALUES (?, ?, ?, ?, ?, ?)
-        ''',(uuid,user,color,date_made,date_due,requests))
+            INSERT INTO prints (uuid, user, slack_id, date_made, phone_number, requests) VALUES (?, ?, ?, ?, ?, ?)
+        ''',(uuid,user,slack_ID,date_made,phone_number,requests))
         self.conn.commit()
         cursor.close()
         return uuid

@@ -4,7 +4,7 @@
         <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);height: 0px;">
             <div class="text-start text">
                 <div id="login-one" class="login-one">
-                    <form action="/login" method="post" class="login-one-form">
+                    <form action="/register" method="post" class="login-one-form">
                         {% if error %}
                         <div class="alert alert-danger alert-dismissible fade show"
                              role="alert">
@@ -18,14 +18,16 @@
                         <div class="col">
                             <div class="login-one-ico" style="background: #579ee0;"><i class="fa fa-unlock-alt" id="lockico"></i>
                                 <div>
-                                    <h3 id="heading">SIGN IN:</h3>
-                                    <h5>Register a account at /register</h5>
+                                    <h3 id="heading">Register and account:</h3>
+                                    <!-- <h5>Demo account is user:password</h5> -->
                                 </div>
                             </div>
                             <div class="form-group mb-3">
-                                <input type="text" name = "user" placeholder="Username" class="form-control" >
+                                <input type="text" name = "user" placeholder="Your Name" class="form-control" >
                                 <input type="password" name = "password" placeholder="Password" class="form-control" >
-                                <button class="btn btn-primary" id="button" style="background-color: #007ac9;width: 100%;margin: 0px;" type="submit">Log in</button>
+                                <input type="password" name = "confirm_password" placeholder="Confirm Password" class="form-control" >
+                                <button class="btn btn-primary" id="button" style="background-color: #007ac9;width: 100%;margin: 0px;" type="submit">Register</button>
+                                {{ captcha_html(captcha)|safe }}
                             </div>
                         </div>
                     </form>

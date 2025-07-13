@@ -71,16 +71,16 @@ class User:
         users = [User.user_from_database(int(uuid[0])) for uuid in users_id]
         print(users)
         return users
-    
-    def create_print(self, color:str, due_in, requests:str):
-        if due_in < 0:
-            due_in = -1
-        elif due_in == 0:
-            due_in = 0
-        else:
-            due_in = time.time() + due_in*24*60*60
+
+    def create_print(self, slack_ID:str, phone_number:str, requests:str):
+        # if due_in < 0:
+        #     due_in = -1
+        # elif due_in == 0:
+        #     due_in = 0
+        # else:
+        #     due_in = time.time() + due_in*24*60*60
         db = Database()
-        uuid = db.create_print(self.id, color, time.time(), due_in, requests)
+        uuid = db.create_print(self.id, slack_ID, phone_number, time.time(), requests)
         db.close()
         return uuid
     def is_admin(self):
