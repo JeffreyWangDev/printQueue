@@ -15,6 +15,8 @@ class Print:
         self.requests = requests    
         self.status = status
         self.status_presentable = "To Print" if status == 0 else "Printing" if status == 1 else "Completed"
+    def __lt__(self, other):
+        return self.date_made < other.date_made
     @staticmethod
     def create_print(user:User, color:str, date_made:int, date_due:int, requests:str):
         db = Database()
@@ -34,7 +36,15 @@ class Print:
         db = Database()
         prints = db.get_all_prints()
         db.close()
-        return [Print(print_data[0],User.user_from_database(print_data[1]), print_data[2], print_data[3], print_data[4], print_data[5], print_data[6]) for print_data in prints]
+        print_sort=  [Print(print_data[0],User.user_from_database(print_data[1]), print_data[2], print_data[3], print_data[4], print_data[5], print_data[6]) for print_data in prints]
+        print_sort.sort()
+        return print_sort
+        # return [Print(print_data[0],User.user_from_database(print_data[1]), print_data[2], print_data[3], print_data[4], print_data[5], print_data[6]) for print_data in prints]
+    @staticmethod
+    def get_to_print():
+        prints = Print.get_all_prints()
+        print_sort = [print_data for print_data in prints if print_data.status == 0 or print_data.status == 1]
+        return print_sort
     @staticmethod
     def get_prints_by_user(user:User):
         db = Database()

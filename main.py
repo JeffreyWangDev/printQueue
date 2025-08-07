@@ -11,6 +11,7 @@ from users import User
 from prints import Print
 from permission import cheek_permission, log_in, log_out
 from logger import Logger
+from pathlib import Path
 
 
 app = Flask(__name__)
@@ -37,7 +38,8 @@ def home():
     if permission_cheek[0]:
         logger.log(f"Home Requested by {permission_cheek[1].username}")
         prints = Print.get_all_prints()
-        return render_template('home.html', prints=prints)
+        to_print = [print_data for print_data in prints if print_data.status == 0 or print_data.status == 1]
+        return render_template('home.html', prints=prints, length=len(to_print))
     logger.log_permission_error(request)
     return redirect(url_for('login'))
 
@@ -53,7 +55,7 @@ def upload():
             user = permission_cheek[1]
             file = request.files['file']
             if file.filename.endswith('.gcode') or file.filename.endswith('.3mf'):
-                file.save(f"./data/uploads/{file.filename}")
+                
                 slackID = request.form.get('slackID')
                 phone = request.form.get('phone')
                 requirements = request.form.get('reqs')
@@ -72,6 +74,7 @@ def upload():
                             logger.log_error(request, "User Already Has a Print in Queue")
                             return render_template('print.html', error="You already have a print in queue")
                 
+                file.save(f"./data/uploads/{file.filename}")
                 print_uuid = user.create_print(slackID, phone, requirements)
                 os.rename(f"./data/uploads/{file.filename}", f"./data/uploads/{print_uuid}.{file.filename.split('.')[-1]}")
                 logger.log(f"Print Created with ID: {print_uuid} by {user.username}")
@@ -81,17 +84,19 @@ def upload():
                 return render_template('print.html', error="Invalid File Type")    
     logger.log_permission_error(request)
     return redirect(url_for('login'))
+
 @app.route("/queue", methods=['GET'])
 def queue():
     logger.log_request(request)
     permission_cheek = cheek_permission(request, 1)
     if permission_cheek[0]:
         all_prints = Print.get_all_prints()
+        
         to_print = [print_data for print_data in all_prints if print_data.status == 0] 
         printing = [print_data for print_data in all_prints if print_data.status == 1]
         completed = [print_data for print_data in all_prints if print_data.status == 2]
         logger.log(f"Queue Requested by {permission_cheek[1].username}")
-        return render_template('queue.html', to_print=to_print, printing=printing, done=completed)
+        return render_template('queue.html', to_print=to_print, printing=printing, done=completed, length=len(all_prints))
     logger.log_permission_error(request)
     return redirect(url_for('login'))
 
@@ -199,7 +204,12 @@ def download(id):
         if print_data is not None:
             try:
                 logger.log(f"Download by {permission_cheek[1].username} for Print ID: {id}")
-                return send_file(f"./data/uploads/{id}.stl", as_attachment=True)
+                file = Path(f"./data/uploads/{id}.gcode")
+                ext = "gcode"
+                if not file.exists():
+                    file = Path(f"./data/uploads/{id}.3mf")
+                    ext = "3mf"
+                return send_file(f"./data/uploads/{id}.{ext}", as_attachment=True)
             except FileNotFoundError:
                 logger.log_error(request, "File Not Found with print ID: "+id)
                 return render_template('error.html', error="File Not Found"),404
@@ -324,8 +334,11 @@ def adduser():
 def page_not_found(e):
     return render_template('404.html'), 404
 
-
+# User.create_user("Admin", "JeffreyIsCool", 2)
+# User.create_user("Admin1", "JeffreyIsCool", 2)
+# User.create_user("Admin2", "JeffreyIsCool", 2)
+# User.create_user("Admin3", "JeffreyIsCool", 2)
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", 5002)
+    app.run("0.0.0.0", 5001)
     
